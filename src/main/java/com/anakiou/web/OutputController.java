@@ -18,14 +18,14 @@ public class OutputController {
         this.pifaceService = pifaceService;
     }
 
-    @GetMapping("/{no}")
-    public int status(@PathVariable("no") int no){
-        return pifaceService.getOutputStatus(no);
-    }
-
     @GetMapping
     public List<Output> get(){
         return pifaceService.getOutputs();
+    }
+
+    @GetMapping("/{no}")
+    public int status(@PathVariable("no") int no){
+        return pifaceService.getOutputStatus(no);
     }
 
     @GetMapping("/names")
