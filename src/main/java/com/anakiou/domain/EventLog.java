@@ -22,13 +22,19 @@ public class EventLog {
 
     @Getter
     @Setter
-    @Column(name = "OUTPUT_VALUE")
-    private Boolean outputValue;
+    @Column
+    private String ioName;
 
     @Getter
     @Setter
-    @Column(name = "PIN_NUMBER")
-    private Integer pinNumber;
+    @Column(name = "IO_VALUE")
+    private Integer ioValue;
+
+    @Getter
+    @Setter
+    @Column(name = "IO_NUMBER")
+    private Integer ioNumber;
+
 
     @Getter
     @Setter

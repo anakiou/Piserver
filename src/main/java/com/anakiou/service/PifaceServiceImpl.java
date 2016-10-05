@@ -72,11 +72,35 @@ public class PifaceServiceImpl implements PifaceService {
     }
 
     @Override
+    public int[] getInputStatus() {
+
+        int[] status = new int[8];
+
+        for (int i = 0; i < 8; i++) {
+            status[i] = getInputStatus(i);
+        }
+
+        return status;
+    }
+
+    @Override
     public int getOutputStatus(int outputNo) {
 
         checkOutputNumber(outputNo);
 
         return piface.getOutputPin(outputNo).getState().getValue();
+    }
+
+    @Override
+    public int[] getOutputStatus() {
+
+        int[] status = new int[8];
+
+        for (int i = 0; i < 8; i++) {
+            status[i] = getOutputStatus(i);
+        }
+
+        return status;
     }
 
     @Override
@@ -86,6 +110,18 @@ public class PifaceServiceImpl implements PifaceService {
         }
 
         return piface.getOutputPin(no).getState().getValue();
+    }
+
+    @Override
+    public int[] setOutput(boolean[] values) {
+
+        int[] results = new int[8];
+
+        for (int i = 0; i < 8; i++) {
+            results[i] = setOutput(i, values[i]);
+        }
+
+        return results;
     }
 
     @Override
@@ -160,8 +196,8 @@ public class PifaceServiceImpl implements PifaceService {
     }
 
     private PiFace createPiface() {
-
         if (piface != null) {
+
             LOG.warn("PIFACE is already initialized");
 
             return piface;

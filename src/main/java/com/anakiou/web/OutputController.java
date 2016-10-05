@@ -19,27 +19,39 @@ public class OutputController {
     }
 
     @GetMapping
-    public List<Output> get(){
+    public List<Output> get() {
         return pifaceService.getOutputs();
     }
 
-    @GetMapping("/{no}")
-    public int status(@PathVariable("no") int no){
-        return pifaceService.getOutputStatus(no);
-    }
-
     @GetMapping("/names")
-    public List<String> getName(){
+    public List<String> getNames() {
         return pifaceService.getOutputNames();
     }
 
-    @PostMapping("/{no}/{value}")
-    public int control(@PathVariable("no") int no, @PathVariable("value")boolean value){
-        return pifaceService.setOutput(no, value);
+    @GetMapping("/{no}")
+    public int getSingleStatus(@PathVariable("no") int no) {
+        return pifaceService.getOutputStatus(no);
+    }
+
+    @GetMapping("/status")
+    public int[] getAllStatus() {
+        return pifaceService.getOutputStatus();
     }
 
     @PostMapping("/{no}")
-    public String setName(@PathVariable("no")int no, @RequestParam("name") String name){
+    public String setName(@PathVariable("no") int no, @RequestParam("name") String name) {
         return pifaceService.setOutputName(no, name);
     }
+
+    @PostMapping("/{no}/{value}")
+    public int setControl(@PathVariable("no") int no, @PathVariable("value") boolean value) {
+        return pifaceService.setOutput(no, value);
+    }
+
+    @PostMapping("/all/{values}")
+    public int[] setAllControls(@RequestParam("values") boolean[] values) {
+        return pifaceService.setOutput(values);
+    }
+
+
 }

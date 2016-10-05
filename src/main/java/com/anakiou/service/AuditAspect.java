@@ -1,7 +1,9 @@
 package com.anakiou.service;
 
 import com.anakiou.domain.EventLog;
+import com.anakiou.domain.Output;
 import com.anakiou.repository.EventLogRepository;
+import com.anakiou.repository.OutputRepository;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -16,27 +18,34 @@ public class AuditAspect {
 
     private final EventLogRepository eventLogRepository;
 
+    private final OutputRepository outputRepository;
+
     @Autowired
-    public AuditAspect(EventLogRepository eventLogRepository) {
+    public AuditAspect(EventLogRepository eventLogRepository, OutputRepository outputRepository) {
         this.eventLogRepository = eventLogRepository;
+        this.outputRepository = outputRepository;
     }
 
     @Before("within(com.anakiou.service.*.*) && " + "execution(* setOutput(..))")
-    public void preProcessControl(JoinPoint joinPoint){
+    public void preProcessControl(JoinPoint joinPoint) {
 
         Object[] args = joinPoint.getArgs();
 
-        if(args == null || args.length < 2){
+        if (args == null || args.length < 2) {
             return;
         }
 
         int no = (int) args[0];
         boolean value = (boolean) args[1];
 
+        Output output = outputRepository.findOneByOutputNumber(no).orElse(new Output());
+
         EventLog e = new EventLog();
-        e.setOutputValue(value);
-        e.setPinNumber(no);
+        e.setIoName(output.getName());
+        e.setIoNumber(no);
+        e.setIoValue(value ? 1 : 0);
         e.setMsg(OUTPUT_CONTROL);
 
+        eventLogRepository.save(e);
     }
 }

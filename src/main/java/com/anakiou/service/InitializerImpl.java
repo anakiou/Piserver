@@ -30,7 +30,7 @@ public class InitializerImpl implements Initializer {
             Input input = inputRepository.findOneByInputNumber(i).orElse(new Input());
 
             if (input.getId() == null) {
-                input.setName(pinStateList.get(0).getName());
+                input.setName("Input " + i);
                 input.setInputNumber(i);
                 input.setInputStatus(-1);
                 inputRepository.save(input);
@@ -45,7 +45,7 @@ public class InitializerImpl implements Initializer {
             Output output = outputRepository.findOneByOutputNumber(i).orElse(new Output());
 
             if (output.getId() == null) {
-                output.setName(pinStateList.get(0).getName());
+                output.setName("Output " + i);
                 output.setOutputNumber(i);
                 output.setOutputStatus(-1);
                 outputRepository.save(output);

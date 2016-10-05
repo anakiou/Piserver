@@ -9,9 +9,15 @@ public interface PifaceService {
 
     int getInputStatus(int inputNo);
 
+    int[] getInputStatus();
+
     int getOutputStatus(int outputNo);
 
+    int[] getOutputStatus();
+
     int setOutput(int no, boolean value);
+
+    int[] setOutput(boolean[] values);
 
     String setInputName(int no, String name);
 
