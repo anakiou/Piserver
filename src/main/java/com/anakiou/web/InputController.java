@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/input")
+@RequestMapping("/api/input")
 public class InputController {
 
     private final PifaceService pifaceService;

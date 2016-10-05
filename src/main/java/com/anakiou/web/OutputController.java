@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/output")
+@RequestMapping("/api/output")
 public class OutputController {
 
     private final PifaceService pifaceService;
@@ -48,7 +48,7 @@ public class OutputController {
         return pifaceService.setOutput(no, value);
     }
 
-    @PostMapping("/all/{values}")
+    @PostMapping("/all")
     public int[] setAllControls(@RequestParam("values") boolean[] values) {
         return pifaceService.setOutput(values);
     }

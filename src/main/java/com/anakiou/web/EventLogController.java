@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/events")
+@RequestMapping("/api/events")
 public class EventLogController {
 
     private final EventLogRepository eventLogRepository;
@@ -20,6 +20,11 @@ public class EventLogController {
     @Autowired
     public EventLogController(EventLogRepository eventLogRepository) {
         this.eventLogRepository = eventLogRepository;
+    }
+
+    @GetMapping("/count")
+    public long count() {
+        return eventLogRepository.count();
     }
 
     @GetMapping
