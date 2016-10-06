@@ -26,7 +26,7 @@ public class AuditAspect {
         this.outputRepository = outputRepository;
     }
 
-    @Before("within(com.anakiou.service.*.*) && " + "execution(* setOutput(..))")
+    @Before("execution(* setOutput(..))")
     public void preProcessControl(JoinPoint joinPoint) {
 
         Object[] args = joinPoint.getArgs();
