@@ -8,7 +8,10 @@ import com.anakiou.error.OutputNotFoundException;
 import com.anakiou.error.PifaceNotReadyException;
 import com.anakiou.repository.InputRepository;
 import com.anakiou.repository.OutputRepository;
+import com.pi4j.component.switches.SwitchStateChangeEvent;
 import com.pi4j.device.piface.PiFace;
+import com.pi4j.device.piface.PiFaceRelay;
+import com.pi4j.device.piface.PiFaceSwitch;
 import com.pi4j.device.piface.impl.PiFaceDevice;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.spi.SpiChannel;
@@ -18,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +65,10 @@ public class PifaceServiceImpl implements PifaceService {
         LOG.info("Initializing OUTPUTS");
 
         initializer.initOutputs(outputStates);
+    }
+
+    @PreDestroy
+    public void teardown() {
     }
 
     @Override
@@ -211,5 +219,28 @@ public class PifaceServiceImpl implements PifaceService {
         }
 
         throw new PifaceNotReadyException();
+    }
+
+
+    class PiRunnable implements Runnable {
+
+        @Override
+        public void run() {
+            piface.getSwitch(PiFaceSwitch.S1).addListener((SwitchStateChangeEvent e) -> {
+                piface.getRelay(PiFaceRelay.K0).close();
+            });
+
+            piface.getSwitch(PiFaceSwitch.S2).addListener((SwitchStateChangeEvent e) -> {
+
+            });
+
+            piface.getSwitch(PiFaceSwitch.S3).addListener((SwitchStateChangeEvent e) -> {
+
+            });
+
+            piface.getSwitch(PiFaceSwitch.S4).addListener((SwitchStateChangeEvent e) -> {
+
+            });
+        }
     }
 }
