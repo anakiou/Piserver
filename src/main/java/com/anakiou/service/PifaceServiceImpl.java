@@ -10,7 +10,6 @@ import com.anakiou.repository.InputRepository;
 import com.anakiou.repository.OutputRepository;
 import com.pi4j.component.switches.SwitchStateChangeEvent;
 import com.pi4j.device.piface.PiFace;
-import com.pi4j.device.piface.PiFaceRelay;
 import com.pi4j.device.piface.PiFaceSwitch;
 import com.pi4j.device.piface.impl.PiFaceDevice;
 import com.pi4j.io.gpio.PinState;
@@ -25,6 +24,7 @@ import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.LongAdder;
 
 @Service
 public class PifaceServiceImpl implements PifaceService {
@@ -39,12 +39,19 @@ public class PifaceServiceImpl implements PifaceService {
 
     private final Initializer initializer;
 
+    private final List<LongAdder> inputCounters;
+
+    private final List<LongAdder> outputCounters;
+
     @Autowired
     public PifaceServiceImpl(InputRepository inputRepository, OutputRepository outputRepository, Initializer initializer) {
         this.inputRepository = inputRepository;
         this.outputRepository = outputRepository;
         this.initializer = initializer;
         this.piface = createPiface();
+        setupEvents();
+        inputCounters = new ArrayList<>(8);
+        outputCounters = new ArrayList<>(8);
     }
 
     @PostConstruct
@@ -56,6 +63,8 @@ public class PifaceServiceImpl implements PifaceService {
         for (int i = 0; i < 8; i++) {
             inputStates.add(piface.getInputPin(i).getState());
             outputStates.add(piface.getOutputPin(i).getState());
+            inputCounters.add(new LongAdder());
+            outputCounters.add(new LongAdder());
         }
 
         LOG.info("Initializing INPUTS");
@@ -92,6 +101,16 @@ public class PifaceServiceImpl implements PifaceService {
     }
 
     @Override
+    public int[] getInputsChangeCount() {
+        int[] sts = new int[8];
+
+        for (int i = 0; i < 8; i++) {
+            sts[i] = inputCounters.get(i).intValue();
+        }
+        return sts;
+    }
+
+    @Override
     public int getOutputStatus(int outputNo) {
 
         checkOutputNumber(outputNo);
@@ -112,12 +131,31 @@ public class PifaceServiceImpl implements PifaceService {
     }
 
     @Override
+    public int[] getOutputsChangeCount() {
+        int[] sts = new int[8];
+
+        for (int i = 0; i < 8; i++) {
+            sts[i] = outputCounters.get(i).intValue();
+        }
+        return sts;
+    }
+
+    @Override
     public int setOutput(int no, boolean value) {
+
+        int before = piface.getOutputPin(no).getState().getValue();
+
         synchronized (this) {
             piface.getOutputPin(no).setState(value);
         }
 
-        return piface.getOutputPin(no).getState().getValue();
+        int after = piface.getOutputPin(no).getState().getValue();
+
+        if (before != after) {
+            outputCounters.get(no).increment();
+        }
+
+        return after;
     }
 
     @Override
@@ -191,6 +229,16 @@ public class PifaceServiceImpl implements PifaceService {
         });
     }
 
+    @Override
+    public int getInputChangeCount(int i) {
+        return inputCounters.get(i).intValue();
+    }
+
+    @Override
+    public int getOutputChangeCount(int i) {
+        return outputCounters.get(i).intValue();
+    }
+
     private void checkInputNumber(int no) {
         if (no < 0 || no > 7) {
             throw new InputNotFoundException(no);
@@ -221,26 +269,22 @@ public class PifaceServiceImpl implements PifaceService {
         throw new PifaceNotReadyException();
     }
 
+    private void setupEvents() {
+        piface.getSwitch(PiFaceSwitch.S1).addListener((SwitchStateChangeEvent e) -> {
+            inputCounters.get(0).increment();
+        });
 
-    class PiRunnable implements Runnable {
+        piface.getSwitch(PiFaceSwitch.S2).addListener((SwitchStateChangeEvent e) -> {
+            inputCounters.get(1).increment();
+        });
 
-        @Override
-        public void run() {
-            piface.getSwitch(PiFaceSwitch.S1).addListener((SwitchStateChangeEvent e) -> {
-                piface.getRelay(PiFaceRelay.K0).close();
-            });
+        piface.getSwitch(PiFaceSwitch.S3).addListener((SwitchStateChangeEvent e) -> {
+            inputCounters.get(2).increment();
+        });
 
-            piface.getSwitch(PiFaceSwitch.S2).addListener((SwitchStateChangeEvent e) -> {
+        piface.getSwitch(PiFaceSwitch.S4).addListener((SwitchStateChangeEvent e) -> {
+            inputCounters.get(3).increment();
+        });
 
-            });
-
-            piface.getSwitch(PiFaceSwitch.S3).addListener((SwitchStateChangeEvent e) -> {
-
-            });
-
-            piface.getSwitch(PiFaceSwitch.S4).addListener((SwitchStateChangeEvent e) -> {
-
-            });
-        }
     }
 }

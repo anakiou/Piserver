@@ -33,6 +33,16 @@ public class InputController {
         return pifaceService.getInputStatus(no);
     }
 
+    @GetMapping("/counter/{no}")
+    public int getInputCounter(@PathVariable("no") int no) {
+        return pifaceService.getInputChangeCount(no);
+    }
+
+    @GetMapping("/counter")
+    public int[] getInputsCounter() {
+        return pifaceService.getInputsChangeCount();
+    }
+
     @GetMapping("/status")
     public int[] getAllStatus() {
         return pifaceService.getInputStatus();

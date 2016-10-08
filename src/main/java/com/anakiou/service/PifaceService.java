@@ -11,9 +11,13 @@ public interface PifaceService {
 
     int[] getInputStatus();
 
+    int[] getInputsChangeCount();
+
     int getOutputStatus(int outputNo);
 
     int[] getOutputStatus();
+
+    int[] getOutputsChangeCount();
 
     int setOutput(int no, boolean value);
 
@@ -32,4 +36,8 @@ public interface PifaceService {
     List<Output> getOutputs();
 
     void updateIO();
+
+    int getInputChangeCount(int i);
+
+    int getOutputChangeCount(int i);
 }

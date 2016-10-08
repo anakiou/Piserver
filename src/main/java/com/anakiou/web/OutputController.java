@@ -43,6 +43,16 @@ public class OutputController {
         return pifaceService.setOutputName(no, name);
     }
 
+    @GetMapping("/counter/{no}")
+    public int getOutputCounter(@PathVariable("no") int no) {
+        return pifaceService.getOutputChangeCount(no);
+    }
+
+    @GetMapping("/counter")
+    public int[] getOutputsCounter() {
+        return pifaceService.getOutputsChangeCount();
+    }
+
     @PostMapping("/{no}/{value}")
     public int setControl(@PathVariable("no") int no, @PathVariable("value") boolean value) {
         return pifaceService.setOutput(no, value);
